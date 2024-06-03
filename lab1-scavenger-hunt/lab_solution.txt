@@ -1,0 +1,19 @@
+Solution [line number]:
+
+-   Total analysis sample size [44]
+
+-   Observed item response counts and proportions [128-144]
+
+-   Number of free parameters [175]
+
+-   Log Likelihood Value [179]
+
+-   Bayesian Information Criteria (BIC) [186]
+
+-   Final class counts and proportions based on the estimated model [221-230]
+
+-   Model-estimated item thresholds for each class [297-336]
+
+-   Latent class multinomial logit means (class proportion/size) [338-343]
+
+-   Class-specific item response probabilities [352-427]

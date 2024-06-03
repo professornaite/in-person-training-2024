@@ -1,0 +1,27 @@
+TITLE:
+LCA - Save response patterns
+DATA:
+FILE = "C:/Users/dinan/Desktop/in-person-day1/lab3/mplus/patterns.dat";
+ 
+VARIABLE:
+NAMES = rand lsayid region urban gender mothed fathed raceth math_irt enjoy good
+     undrstnd nervous scared useful logical job adult; 
+ MISSING=.;
+ categorical = enjoy useful logical job adult; 
+   usevar =  enjoy useful logical job adult;
+   classes = c(4);
+ANALYSIS:
+estimator = mlr; 
+    type = mixture;    
+    starts = 0; 
+    processors = 10;
+    optseed = 939021;
+OUTPUT:
+patterns tech10 tech11 tech14
+SAVEDATA:
+File=savedata.dat;
+    Save=cprob;
+    
+    ! Code to save response frequency data 
+    
+    response is resp_patterns.dat;

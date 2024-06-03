@@ -1,0 +1,197 @@
+---
+title: "Lab 1: LCA Scavenger Hunt"
+author: "IMMERSE Training Team"
+date: "Updated: `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    theme: flatly
+editor_options:
+  markdown:
+    wrap: sentence
+header-includes:
+- \usepackage{wrapfig}     
+---
+
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri(file.path("figures/immerse_hex.png")), 
+               alt = 'logo', 
+               style = 'position:absolute; top:0; right:0px; padding:10px;',
+               width ="200")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE,
+                      message = FALSE,
+                      tidy.opts=list(width.cutoff=60)) #Here, I have made it so that when you knit your .rmd, warnings and messages will not show up in the html markdown. 
+```
+
+------------------------------------------------------------------------
+
+![](figures/IESNewLogo.jpg){style="float: left;" width="300"}
+
+The Institute of Mixture Modeling for Equity-Oriented Researchers, Scholars, and Educators (IMMERSE) is an IES funded training grant (R305B220021) to support education scholars in integrating mixture modeling into their research.
+
+-   Please [visit our website](https://immerse.education.ucsb.edu/) to learn more.
+
+-   Visit our [GitHub](https://github.com/immerse-ucsb) account to access all the IMMERSE materials.
+
+-   Follow us on [Twitter](https://twitter.com/IMMERSE_UCSB)!
+
+How to reference this workshop: Institute of Mixture Modeling for Equity-Oriented Researchers, Scholars, and Educators (2024).
+IMMERSE In-Person Training Workshop (IES No. 305B220021).
+Institute of Education Sciences.
+<https://immerse-ucsb.github.io/pre-training>
+
+
+------------------------------------------------------------------------
+
+A note about `MplusAutomation`: 
+
+It is best to install the latest development of the `MplusAutomation` pacakge by installing it straight from github using Hadley Wickham's devtools package. If you do not have devtools installed, first install it and then install `MplusAutomation`. (A reminder that once you have a package installed, you do not need to install it again!). See below:
+
+```{r, eval = FALSE}
+install.packages("devtools")
+library(devtools)
+
+install_github("michaelhallquist/MplusAutomation")
+```
+
+Load packages
+
+```{r}
+library(MplusAutomation)
+library(tidyverse) #collection of R packages designed for data science
+library(here) #helps with filepaths
+library(janitor) #clean_names
+library(gt) # creates tables
+library(DiagrammeR) # create path diagrams
+here::i_am("lab1_scavenger_hunt.Rmd")
+```
+
+------------------------------------------------------------------------
+
+*Data source*: The dataset used in this example comes from the Longitudinal Study of American Life (LSAL; Miller, 2010), funded by the National Science Foundation (NSF) in 1986. Science attitude items for the LCA were selected based on prior research using the same data (Ing & Nylund-Gibson, 2013, 2017) to create the latent class variable.
+
+```{r, echo=FALSE, eval=TRUE}
+tribble(
+  ~ "Name",~ "Description",~ "Values",
+  "Enjoy","I Enjoy Science","0 = Disagree, 1 = Agree",
+  "Useful","Science is Useful in Everyday Problems","0 = Disagree, 1 = Agree",
+  "Logical","Science Helps Logical Thinking","0 = Disagree, 1 = Agree",
+  "Job","Need Science for a Good Job","0 = Disagree, 1 = Agree",
+  "Adult","Will Use Science Often as an Adult","0 = Disagree, 1 = Agree") %>%
+  gt() %>%
+  tab_header(title = "Binary LCA indicators") %>%
+  tab_options(table.width = pct(80)) %>%
+  tab_footnote(footnote = "Longitudinal Study of American Life (LSAL)",
+               location = cells_title())
+```
+
+------------------------------------------------------------------------
+
+```{r, echo=FALSE, eval=TRUE, fig.align='center'}
+
+grViz(" digraph model {
+
+# The `graph` statement - No editing needed
+
+    graph [layout = dot, overlap = true]
+ 
+# Two `node` statements
+ 
+# One for measured variables (box) 
+
+    node [shape=box]
+    Enjoy Useful Logical Job Adult;
+ 
+# One for latent variables (circle) 
+ 
+    node [shape=circle]
+    lca [label=<Science Attitudes <br/>C<sub>k</sub>>];
+    
+# `edge` statements
+ 
+    edge [minlen = 2]
+    lca -> {Enjoy Useful Logical Job Adult}
+ 
+ }") 
+```
+
+------------------------------------------------------------------------
+
+The data can be found in the `data` folder and is called `lsay_subset.csv`.
+
+```{r}
+lsay_data <- read_csv(here("data","lsay_subset.csv")) %>% 
+  clean_names() # make variable names lowercase
+
+# Quick data summary
+summary(lsay_data)
+```
+
+------------------------------------------------------------------------
+
+1.  Using MplusAutomation, estimate a 4-class LCA model using the variable indicators `enjoy`, `useful`, `logical`, `job`, `adult`:
+
+```{r, eval = FALSE}
+input  <- mplusObject(
+  TITLE = "LSAY 4-Class Model - Lab 1", 
+  VARIABLE = "categorical = enjoy useful logical job adult;
+  usevar =  enjoy useful logical job adult; 
+  classes = c(4);",
+
+  ANALYSIS = 
+   "estimator = mlr; 
+    type = mixture;",
+  
+  OUTPUT = "tech11 tech14;",
+  
+  PLOT = "type = plot3; 
+    series = enjoy-adult(*);",
+  
+  usevariables = colnames(lsay_data),
+  rdata = lsay_data)
+
+output <- mplusModeler(input,
+                       dataout=here("mplus", "lsay.dat"),
+                       modelout=here("mplus","lsay.inp") ,
+                       check=TRUE, run = TRUE, hashfilename = FALSE)
+```
+
+After estimating a model using `MplusAutomation` , the first thing we need to do is open up our output.
+You should make it a habit of always checking your output before moving forward with any code to make tables or figures.
+
+------------------------------------------------------------------------
+
+2.  Locate the following in the output file [note the line number]:
+
+-   Total analysis sample size 
+
+-   Observed item response counts and proportions
+
+-   Number of free parameters
+
+-   Log Likelihood Value
+
+-   Bayesian Information Criteria (BIC)
+
+-   Final class counts and proportions based on the estimated model
+
+-   Model-estimated item thresholds for each class
+
+-   Latent class multinomial logit means (class proportion/size)
+
+-   Class-specific item response probabilities
+
+------------------------------------------------------------------------
+
+Sneak peak of the item probability plot:
+
+```{r}
+source(here("plot_lca.txt")) # This is a custom function to plot mixtures from the Mplus output
+
+model <- readModels(here("mplus", "lsay.out")) # read in output
+
+plot_lca(model_name = model)
+```

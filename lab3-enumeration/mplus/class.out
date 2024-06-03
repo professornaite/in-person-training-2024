@@ -1,0 +1,724 @@
+Mplus VERSION 8.10
+MUTHEN & MUTHEN
+06/02/2024   8:59 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE:
+  LCA - Calculated k-Class 95% CI
+  DATA:
+  FILE = "C:/Users/dinan/Box/IES_IMMERSE/Training Materials/
+  in-person-training-2024/lab3-enumeration/mplus/lsal.dat";
+  VARIABLE:
+  NAMES = rand lsayid region urban gender mothed fathed raceth math_irt enjoy good
+       undrstnd nervous scared useful logical job adult;
+   MISSING=.;
+   categorical = enjoy-adult;
+     usevar =  enjoy-adult;
+     classes = c(4);
+  ANALYSIS:
+  estimator = ml;
+      type = mixture;
+      starts = 0;
+      processors = 10;
+      optseed = 939021;
+      bootstrap = 1000;
+  MODEL:
+
+    !CHANGE THIS SECTION TO YOUR CHOSEN k-CLASS MODEL
+
+    %OVERALL%
+    [C#1](c1);
+    [C#2](c2);
+    [C#3](c3);
+
+
+    Model Constraint:
+    New(p1 p2 p3 p4);
+
+    p1 = exp(c1)/(1+exp(c1)+exp(c2)+exp(c3));
+    p2 = exp(c2)/(1+exp(c1)+exp(c2)+exp(c3));
+    p3 = exp(c3)/(1+exp(c1)+exp(c2)+exp(c3));
+    p4 = 1/(1+exp(c1)+exp(c2)+exp(c3));
+  OUTPUT:
+  cinterval(bcbootstrap)
+
+
+
+*** WARNING
+  Data set contains cases with missing on all variables.
+  These cases were not included in the analysis.
+  Number of cases with missing on all variables:  441
+   1 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+
+LCA - Calculated k-Class 95% CI
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                        2675
+
+Number of dependent variables                                    9
+Number of independent variables                                  0
+Number of continuous latent variables                            0
+Number of categorical latent variables                           1
+
+Observed dependent variables
+
+  Binary and ordered categorical (ordinal)
+   ENJOY       GOOD        UNDRSTND    NERVOUS     SCARED      USEFUL
+   LOGICAL     JOB         ADULT
+
+Categorical latent variables
+   C
+
+
+Estimator                                                       ML
+Information matrix                                        OBSERVED
+Optimization Specifications for the Quasi-Newton Algorithm for
+Continuous Outcomes
+  Maximum number of iterations                                 100
+  Convergence criterion                                  0.100D-05
+Optimization Specifications for the EM Algorithm
+  Maximum number of iterations                                 500
+  Convergence criteria
+    Loglikelihood change                                 0.100D-06
+    Relative loglikelihood change                        0.100D-06
+    Derivative                                           0.100D-05
+Optimization Specifications for the M step of the EM Algorithm for
+Categorical Latent variables
+  Number of M step iterations                                    1
+  M step convergence criterion                           0.100D-05
+  Basis for M step termination                           ITERATION
+Optimization Specifications for the M step of the EM Algorithm for
+Censored, Binary or Ordered Categorical (Ordinal), Unordered
+Categorical (Nominal) and Count Outcomes
+  Number of M step iterations                                    1
+  M step convergence criterion                           0.100D-05
+  Basis for M step termination                           ITERATION
+  Maximum value for logit thresholds                            15
+  Minimum value for logit thresholds                           -15
+  Minimum expected cell size for chi-square              0.100D-01
+Maximum number of iterations for H1                           2000
+Convergence criterion for H1                             0.100D-03
+Number of bootstrap draws
+    Requested                                                 1000
+    Completed                                                 1000
+Optimization algorithm                                         EMA
+Random Starts Specifications
+  Random seed for analysis                                  939021
+Link                                                         LOGIT
+
+Input data file(s)
+  C:/Users/dinan/Box/IES_IMMERSE/Training Materials/in-person-training-2024/lab3
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of missing data patterns            30
+     Number of y missing data patterns           0
+     Number of u missing data patterns          30
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+
+     PROPORTION OF DATA PRESENT FOR U
+
+
+           Covariance Coverage
+              ENJOY         GOOD          UNDRSTND      NERVOUS       SCARED
+              ________      ________      ________      ________      ________
+ ENJOY          0.997
+ GOOD           0.996         0.998
+ UNDRSTND       0.987         0.988         0.990
+ NERVOUS        0.978         0.979         0.971         0.980
+ SCARED         0.988         0.990         0.982         0.973         0.991
+ USEFUL         0.985         0.986         0.978         0.970         0.981
+ LOGICAL        0.982         0.983         0.976         0.966         0.978
+ JOB            0.977         0.978         0.971         0.962         0.973
+ ADULT          0.987         0.988         0.981         0.972         0.983
+
+
+           Covariance Coverage
+              USEFUL        LOGICAL       JOB           ADULT
+              ________      ________      ________      ________
+ USEFUL         0.988
+ LOGICAL        0.975         0.985
+ JOB            0.970         0.969         0.980
+ ADULT          0.979         0.977         0.975         0.990
+
+
+UNIVARIATE PROPORTIONS AND COUNTS FOR CATEGORICAL VARIABLES
+
+    ENJOY
+      Category 1    0.331          884.000
+      Category 2    0.669         1784.000
+    GOOD
+      Category 1    0.307          820.000
+      Category 2    0.693         1850.000
+    UNDRSTND
+      Category 1    0.237          628.000
+      Category 2    0.763         2020.000
+    NERVOUS
+      Category 1    0.410         1076.000
+      Category 2    0.590         1546.000
+    SCARED
+      Category 1    0.313          830.000
+      Category 2    0.687         1821.000
+    USEFUL
+      Category 1    0.305          807.000
+      Category 2    0.695         1835.000
+    LOGICAL
+      Category 1    0.360          949.000
+      Category 2    0.640         1686.000
+    JOB
+      Category 1    0.257          674.000
+      Category 2    0.743         1947.000
+    ADULT
+      Category 1    0.298          790.000
+      Category 2    0.702         1858.000
+
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                       39
+
+Loglikelihood
+
+          H0 Value                      -12706.569
+
+Information Criteria
+
+          Akaike (AIC)                   25491.137
+          Bayesian (BIC)                 25720.914
+          Sample-Size Adjusted BIC       25596.999
+            (n* = (n + 2) / 24)
+
+Chi-Square Test of Model Fit for the Binary and Ordered Categorical
+(Ordinal) Outcomes**
+
+          Pearson Chi-Square
+
+          Value                           1256.113
+          Degrees of Freedom                   462
+          P-Value                           0.0000
+
+          Likelihood Ratio Chi-Square
+
+          Value                           1124.259
+          Degrees of Freedom                   462
+          P-Value                           0.0000
+
+** Of the 4352 cells in the latent class indicator table, 10
+   were deleted in the calculation of chi-square due to extreme values.
+
+Chi-Square Test for MCAR under the Unrestricted Latent Class Indicator Model
+
+          Pearson Chi-Square
+
+          Value                           2337.619
+          Degrees of Freedom                  3811
+          P-Value                           1.0000
+
+          Likelihood Ratio Chi-Square
+
+          Value                            701.230
+          Degrees of Freedom                  3811
+          P-Value                           1.0000
+
+
+
+FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES
+BASED ON THE ESTIMATED MODEL
+
+    Latent
+   Classes
+
+       1        525.83138          0.19657
+       2        283.26963          0.10590
+       3       1275.02253          0.47664
+       4        590.87646          0.22089
+
+
+FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES
+BASED ON ESTIMATED POSTERIOR PROBABILITIES
+
+    Latent
+   Classes
+
+       1        525.83138          0.19657
+       2        283.26963          0.10590
+       3       1275.02253          0.47664
+       4        590.87646          0.22089
+
+
+FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES
+BASED ON THEIR MOST LIKELY LATENT CLASS MEMBERSHIP
+
+Class Counts and Proportions
+
+    Latent
+   Classes
+
+       1              529          0.19776
+       2              282          0.10542
+       3             1319          0.49308
+       4              545          0.20374
+
+
+CLASSIFICATION QUALITY
+
+     Entropy                         0.739
+
+
+Average Latent Class Probabilities for Most Likely Latent Class Membership (Row)
+by Latent Class (Column)
+
+           1        2        3        4
+
+    1   0.819    0.032    0.079    0.069
+    2   0.052    0.880    0.000    0.068
+    3   0.035    0.000    0.900    0.065
+    4   0.058    0.033    0.085    0.823
+
+
+Classification Probabilities for the Most Likely Latent Class Membership (Column)
+by Latent Class (Row)
+
+           1        2        3        4
+
+    1   0.824    0.028    0.088    0.060
+    2   0.059    0.876    0.000    0.064
+    3   0.033    0.000    0.931    0.036
+    4   0.062    0.033    0.146    0.759
+
+
+Logits for the Classification Probabilities for the Most Likely Latent Class Membership (Column)
+by Latent Class (Row)
+
+              1        2        3        4
+
+    1      2.615   -0.780    0.372    0.000
+    2     -0.082    2.611   -6.241    0.000
+    3     -0.095   -8.422    3.244    0.000
+    4     -2.505   -3.149   -1.650    0.000
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+Latent Class 1
+
+ Thresholds
+    ENJOY$1            0.909      0.276      3.297      0.001
+    GOOD$1             1.319      0.353      3.740      0.000
+    UNDRSTND$1         0.211      0.182      1.161      0.246
+    NERVOUS$1          0.929      0.185      5.012      0.000
+    SCARED$1           0.175      0.155      1.129      0.259
+    USEFUL$1          -1.355      0.218     -6.215      0.000
+    LOGICAL$1         -0.829      0.192     -4.312      0.000
+    JOB$1             -1.621      0.211     -7.687      0.000
+    ADULT$1           -1.262      0.188     -6.725      0.000
+
+Latent Class 2
+
+ Thresholds
+    ENJOY$1            1.915      0.311      6.162      0.000
+    GOOD$1             1.735      0.291      5.973      0.000
+    UNDRSTND$1         1.199      0.260      4.610      0.000
+    NERVOUS$1          0.973      0.184      5.281      0.000
+    SCARED$1           0.366      0.173      2.112      0.035
+    USEFUL$1           2.134      0.385      5.548      0.000
+    LOGICAL$1          2.520      0.575      4.383      0.000
+    JOB$1              1.845      0.346      5.325      0.000
+    ADULT$1            2.369      0.450      5.268      0.000
+
+Latent Class 3
+
+ Thresholds
+    ENJOY$1           -2.349      0.135    -17.364      0.000
+    GOOD$1            -2.716      0.196    -13.858      0.000
+    UNDRSTND$1        -2.976      0.186    -16.040      0.000
+    NERVOUS$1         -1.044      0.172     -6.082      0.000
+    SCARED$1          -1.472      0.218     -6.746      0.000
+    USEFUL$1          -2.669      0.237    -11.254      0.000
+    LOGICAL$1         -1.871      0.137    -13.677      0.000
+    JOB$1             -2.930      0.215    -13.607      0.000
+    ADULT$1           -3.011      0.488     -6.169      0.000
+
+Latent Class 4
+
+ Thresholds
+    ENJOY$1           -1.044      0.186     -5.600      0.000
+    GOOD$1            -1.745      0.300     -5.826      0.000
+    UNDRSTND$1        -2.099      0.266     -7.897      0.000
+    NERVOUS$1         -0.808      0.186     -4.352      0.000
+    SCARED$1          -1.102      0.196     -5.616      0.000
+    USEFUL$1           0.560      0.183      3.050      0.002
+    LOGICAL$1          0.520      0.151      3.446      0.001
+    JOB$1             -0.025      0.162     -0.151      0.880
+    ADULT$1            0.470      0.176      2.670      0.008
+
+Categorical Latent Variables
+
+ Means
+    C#1               -0.117      0.178     -0.657      0.511
+    C#2               -0.735      0.150     -4.901      0.000
+    C#3                0.769      0.125      6.151      0.000
+
+New/Additional Parameters
+    P1                 0.197      0.021      9.278      0.000
+    P2                 0.106      0.012      8.724      0.000
+    P3                 0.477      0.024     19.507      0.000
+    P4                 0.221      0.021     10.401      0.000
+
+
+RESULTS IN PROBABILITY SCALE
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+Latent Class 1
+
+ ENJOY
+    Category 1         0.713      0.059     12.078      0.000
+    Category 2         0.287      0.059      4.869      0.000
+ GOOD
+    Category 1         0.789      0.064     12.272      0.000
+    Category 2         0.211      0.064      3.282      0.001
+ UNDRSTND
+    Category 1         0.553      0.045     12.408      0.000
+    Category 2         0.447      0.045     10.046      0.000
+ NERVOUS
+    Category 1         0.717      0.036     20.019      0.000
+    Category 2         0.283      0.036      7.902      0.000
+ SCARED
+    Category 1         0.544      0.038     14.276      0.000
+    Category 2         0.456      0.038     11.979      0.000
+ USEFUL
+    Category 1         0.205      0.033      6.244      0.000
+    Category 2         0.795      0.033     24.198      0.000
+ LOGICAL
+    Category 1         0.304      0.038      7.899      0.000
+    Category 2         0.696      0.038     18.100      0.000
+ JOB
+    Category 1         0.165      0.028      5.910      0.000
+    Category 2         0.835      0.028     29.884      0.000
+ ADULT
+    Category 1         0.221      0.031      7.059      0.000
+    Category 2         0.779      0.031     24.940      0.000
+
+Latent Class 2
+
+ ENJOY
+    Category 1         0.872      0.033     26.362      0.000
+    Category 2         0.128      0.033      3.884      0.000
+ GOOD
+    Category 1         0.850      0.034     24.737      0.000
+    Category 2         0.150      0.034      4.362      0.000
+ UNDRSTND
+    Category 1         0.768      0.044     17.378      0.000
+    Category 2         0.232      0.044      5.239      0.000
+ NERVOUS
+    Category 1         0.726      0.036     20.046      0.000
+    Category 2         0.274      0.036      7.574      0.000
+ SCARED
+    Category 1         0.590      0.041     14.248      0.000
+    Category 2         0.410      0.041      9.882      0.000
+ USEFUL
+    Category 1         0.894      0.034     26.586      0.000
+    Category 2         0.106      0.034      3.145      0.002
+ LOGICAL
+    Category 1         0.926      0.027     34.778      0.000
+    Category 2         0.074      0.027      2.798      0.005
+ JOB
+    Category 1         0.864      0.041     21.090      0.000
+    Category 2         0.136      0.041      3.333      0.001
+ ADULT
+    Category 1         0.914      0.034     26.718      0.000
+    Category 2         0.086      0.034      2.501      0.012
+
+Latent Class 3
+
+ ENJOY
+    Category 1         0.087      0.011      8.180      0.000
+    Category 2         0.913      0.011     85.714      0.000
+ GOOD
+    Category 1         0.062      0.011      5.694      0.000
+    Category 2         0.938      0.011     86.082      0.000
+ UNDRSTND
+    Category 1         0.049      0.008      5.855      0.000
+    Category 2         0.951      0.008    114.791      0.000
+ NERVOUS
+    Category 1         0.260      0.027      9.551      0.000
+    Category 2         0.740      0.027     27.118      0.000
+ SCARED
+    Category 1         0.187      0.024      7.830      0.000
+    Category 2         0.813      0.024     34.137      0.000
+ USEFUL
+    Category 1         0.065      0.014      4.761      0.000
+    Category 2         0.935      0.014     68.692      0.000
+ LOGICAL
+    Category 1         0.133      0.016      8.588      0.000
+    Category 2         0.867      0.016     55.774      0.000
+ JOB
+    Category 1         0.051      0.010      5.205      0.000
+    Category 2         0.949      0.010     97.520      0.000
+ ADULT
+    Category 1         0.047      0.013      3.753      0.000
+    Category 2         0.953      0.013     76.239      0.000
+
+Latent Class 4
+
+ ENJOY
+    Category 1         0.260      0.036      7.271      0.000
+    Category 2         0.740      0.036     20.647      0.000
+ GOOD
+    Category 1         0.149      0.037      4.048      0.000
+    Category 2         0.851      0.037     23.188      0.000
+ UNDRSTND
+    Category 1         0.109      0.024      4.488      0.000
+    Category 2         0.891      0.024     36.606      0.000
+ NERVOUS
+    Category 1         0.308      0.039      7.990      0.000
+    Category 2         0.692      0.039     17.929      0.000
+ SCARED
+    Category 1         0.249      0.035      7.025      0.000
+    Category 2         0.751      0.035     21.150      0.000
+ USEFUL
+    Category 1         0.636      0.042     15.239      0.000
+    Category 2         0.364      0.042      8.709      0.000
+ LOGICAL
+    Category 1         0.627      0.035     17.864      0.000
+    Category 2         0.373      0.035     10.622      0.000
+ JOB
+    Category 1         0.494      0.040     12.284      0.000
+    Category 2         0.506      0.040     12.589      0.000
+ ADULT
+    Category 1         0.615      0.041     14.938      0.000
+    Category 2         0.385      0.041      9.341      0.000
+
+
+CONFIDENCE INTERVALS OF MODEL RESULTS
+
+                  Lower .5%  Lower 2.5%    Lower 5%    Estimate    Upper 5%  Upper 2.5%   Upper .5%
+
+Latent Class 1
+
+ Thresholds
+    ENJOY$1         -0.361       0.244       0.512       0.909       1.272       1.360       1.523
+    GOOD$1          -0.159       0.164       0.809       1.319       1.825       1.950       2.058
+    UNDRSTND$1      -0.595      -0.139      -0.055       0.211       0.461       0.508       0.611
+    NERVOUS$1        0.555       0.605       0.661       0.929       1.223       1.298       1.534
+    SCARED$1        -0.212      -0.142      -0.078       0.175       0.416       0.476       0.635
+    USEFUL$1        -2.207      -1.866      -1.749      -1.355      -1.067      -1.029      -0.984
+    LOGICAL$1       -1.617      -1.232      -1.129      -0.829      -0.570      -0.529      -0.457
+    JOB$1           -2.370      -2.091      -1.984      -1.621      -1.323      -1.280      -1.162
+    ADULT$1         -1.888      -1.636      -1.580      -1.262      -0.962      -0.909      -0.841
+
+Latent Class 2
+
+ Thresholds
+    ENJOY$1          1.243       1.385       1.468       1.915       2.459       2.612       2.890
+    GOOD$1           1.096       1.247       1.322       1.735       2.212       2.365       2.689
+    UNDRSTND$1       0.667       0.762       0.830       1.199       1.705       1.770       2.081
+    NERVOUS$1        0.505       0.629       0.672       0.973       1.284       1.353       1.476
+    SCARED$1        -0.088       0.047       0.079       0.366       0.657       0.725       0.819
+    USEFUL$1         1.048       1.559       1.657       2.134       2.835       3.013       3.561
+    LOGICAL$1        1.563       1.903       1.994       2.520       3.324       3.481       4.152
+    JOB$1            0.846       1.247       1.338       1.845       2.440       2.615       2.847
+    ADULT$1          1.050       1.605       1.714       2.369       3.147       3.330       3.781
+
+Latent Class 3
+
+ Thresholds
+    ENJOY$1         -2.790      -2.658      -2.590      -2.349      -2.141      -2.120      -2.033
+    GOOD$1          -3.348      -3.178      -3.101      -2.716      -2.455      -2.406      -2.329
+    UNDRSTND$1      -3.550      -3.393      -3.300      -2.976      -2.711      -2.666      -2.533
+    NERVOUS$1       -2.097      -1.298      -1.219      -1.044      -0.900      -0.871      -0.809
+    SCARED$1        -3.081      -1.814      -1.689      -1.472      -1.324      -1.299      -1.236
+    USEFUL$1        -3.505      -3.293      -3.156      -2.669      -2.372      -2.310      -2.190
+    LOGICAL$1       -2.270      -2.152      -2.099      -1.871      -1.654      -1.615      -1.568
+    JOB$1           -3.649      -3.452      -3.384      -2.930      -2.648      -2.606      -2.530
+    ADULT$1         -4.182      -3.776      -3.625      -3.011      -2.641      -2.578      -2.475
+
+Latent Class 4
+
+ Thresholds
+    ENJOY$1         -1.611      -1.430      -1.375      -1.044      -0.763      -0.704      -0.601
+    GOOD$1          -2.750      -2.475      -2.312      -1.745      -1.326      -1.258      -1.069
+    UNDRSTND$1      -2.986      -2.748      -2.620      -2.099      -1.741      -1.692      -1.578
+    NERVOUS$1       -1.359      -1.220      -1.107      -0.808      -0.533      -0.494      -0.388
+    SCARED$1        -1.729      -1.521      -1.409      -1.102      -0.811      -0.751      -0.660
+    USEFUL$1         0.115       0.239       0.292       0.560       0.874       0.961       1.179
+    LOGICAL$1        0.129       0.207       0.258       0.520       0.753       0.824       0.896
+    JOB$1           -0.470      -0.329      -0.284      -0.025       0.247       0.319       0.410
+    ADULT$1          0.000       0.135       0.179       0.470       0.750       0.827       0.964
+
+Categorical Latent Variables
+
+ Means
+    C#1             -0.528      -0.441      -0.390      -0.117       0.191       0.269       0.368
+    C#2             -1.118      -1.004      -0.958      -0.735      -0.487      -0.435      -0.206
+    C#3              0.434       0.529       0.563       0.769       0.966       1.007       1.078
+
+New/Additional Parameters
+    P1               0.146       0.162       0.166       0.197       0.233       0.244       0.264
+    P2               0.080       0.086       0.089       0.106       0.127       0.132       0.155
+    P3               0.380       0.426       0.441       0.477       0.513       0.518       0.527
+    P4               0.167       0.182       0.188       0.221       0.258       0.263       0.274
+
+
+CONFIDENCE INTERVALS IN PROBABILITY SCALE
+
+Latent Class 1
+
+ ENJOY
+    Category 1       0.411       0.561       0.625       0.713       0.781       0.796       0.821
+    Category 2       0.178       0.204       0.219       0.287       0.374       0.438       0.586
+ GOOD
+    Category 1       0.460       0.541       0.692       0.789       0.861       0.875       0.887
+    Category 2       0.113       0.124       0.139       0.211       0.307       0.452       0.533
+ UNDRSTND
+    Category 1       0.355       0.465       0.486       0.553       0.613       0.624       0.648
+    Category 2       0.350       0.375       0.387       0.447       0.514       0.533       0.641
+ NERVOUS
+    Category 1       0.635       0.647       0.660       0.717       0.773       0.786       0.823
+    Category 2       0.176       0.212       0.227       0.283       0.340       0.352       0.360
+ SCARED
+    Category 1       0.447       0.465       0.481       0.544       0.602       0.617       0.654
+    Category 2       0.344       0.383       0.397       0.456       0.519       0.535       0.550
+ USEFUL
+    Category 1       0.099       0.134       0.148       0.205       0.256       0.263       0.272
+    Category 2       0.728       0.737       0.744       0.795       0.852       0.866       0.898
+ LOGICAL
+    Category 1       0.166       0.226       0.244       0.304       0.361       0.371       0.388
+    Category 2       0.601       0.628       0.639       0.696       0.756       0.774       0.832
+ JOB
+    Category 1       0.085       0.110       0.121       0.165       0.210       0.218       0.238
+    Category 2       0.760       0.781       0.790       0.835       0.879       0.890       0.910
+ ADULT
+    Category 1       0.131       0.163       0.171       0.221       0.277       0.287       0.301
+    Category 2       0.698       0.713       0.723       0.779       0.829       0.837       0.863
+
+Latent Class 2
+
+ ENJOY
+    Category 1       0.776       0.800       0.813       0.872       0.921       0.932       0.947
+    Category 2       0.050       0.068       0.079       0.128       0.186       0.200       0.222
+ GOOD
+    Category 1       0.750       0.777       0.790       0.850       0.901       0.914       0.936
+    Category 2       0.063       0.086       0.099       0.150       0.210       0.223       0.250
+ UNDRSTND
+    Category 1       0.661       0.682       0.696       0.768       0.846       0.854       0.889
+    Category 2       0.108       0.145       0.153       0.232       0.303       0.318       0.334
+ NERVOUS
+    Category 1       0.624       0.652       0.662       0.726       0.783       0.795       0.814
+    Category 2       0.183       0.205       0.217       0.274       0.338       0.348       0.375
+ SCARED
+    Category 1       0.478       0.512       0.520       0.590       0.659       0.674       0.694
+    Category 2       0.304       0.325       0.341       0.410       0.480       0.488       0.511
+ USEFUL
+    Category 1       0.740       0.826       0.840       0.894       0.945       0.953       0.972
+    Category 2       0.027       0.045       0.055       0.106       0.160       0.170       0.249
+ LOGICAL
+    Category 1       0.827       0.870       0.880       0.926       0.965       0.970       0.985
+    Category 2       0.015       0.030       0.034       0.074       0.120       0.130       0.168
+ JOB
+    Category 1       0.700       0.777       0.792       0.864       0.920       0.932       0.945
+    Category 2       0.051       0.068       0.080       0.136       0.208       0.222       0.300
+ ADULT
+    Category 1       0.741       0.833       0.847       0.914       0.959       0.965       0.978
+    Category 2       0.021       0.033       0.041       0.086       0.152       0.166       0.255
+
+Latent Class 3
+
+ ENJOY
+    Category 1       0.058       0.065       0.070       0.087       0.105       0.107       0.116
+    Category 2       0.884       0.893       0.895       0.913       0.930       0.934       0.941
+ GOOD
+    Category 1       0.034       0.040       0.043       0.062       0.079       0.083       0.089
+    Category 2       0.911       0.917       0.921       0.938       0.957       0.960       0.965
+ UNDRSTND
+    Category 1       0.028       0.033       0.036       0.049       0.062       0.065       0.074
+    Category 2       0.926       0.935       0.938       0.951       0.964       0.967       0.972
+ NERVOUS
+    Category 1       0.109       0.215       0.228       0.260       0.289       0.295       0.308
+    Category 2       0.691       0.705       0.711       0.740       0.771       0.785       0.890
+ SCARED
+    Category 1       0.044       0.140       0.156       0.187       0.210       0.214       0.225
+    Category 2       0.775       0.786       0.790       0.813       0.844       0.859       0.954
+ USEFUL
+    Category 1       0.029       0.036       0.041       0.065       0.085       0.090       0.101
+    Category 2       0.899       0.909       0.915       0.935       0.959       0.964       0.970
+ LOGICAL
+    Category 1       0.094       0.104       0.109       0.133       0.161       0.166       0.173
+    Category 2       0.826       0.834       0.839       0.867       0.891       0.895       0.905
+ JOB
+    Category 1       0.025       0.031       0.033       0.051       0.066       0.069       0.074
+    Category 2       0.926       0.931       0.934       0.949       0.967       0.969       0.975
+ ADULT
+    Category 1       0.015       0.022       0.026       0.047       0.067       0.071       0.078
+    Category 2       0.922       0.929       0.933       0.953       0.974       0.977       0.985
+
+Latent Class 4
+
+ ENJOY
+    Category 1       0.166       0.193       0.202       0.260       0.318       0.331       0.354
+    Category 2       0.645       0.668       0.682       0.740       0.798       0.807       0.830
+ GOOD
+    Category 1       0.060       0.078       0.090       0.149       0.210       0.221       0.256
+    Category 2       0.744       0.779       0.789       0.851       0.910       0.921       0.940
+ UNDRSTND
+    Category 1       0.048       0.060       0.068       0.109       0.149       0.156       0.171
+    Category 2       0.824       0.844       0.851       0.891       0.932       0.940       0.952
+ NERVOUS
+    Category 1       0.204       0.228       0.248       0.308       0.370       0.379       0.404
+    Category 2       0.591       0.620       0.630       0.692       0.750       0.772       0.795
+ SCARED
+    Category 1       0.151       0.179       0.196       0.249       0.308       0.321       0.341
+    Category 2       0.659       0.679       0.691       0.751       0.804       0.820       0.849
+ USEFUL
+    Category 1       0.529       0.559       0.572       0.636       0.705       0.723       0.765
+    Category 2       0.235       0.275       0.294       0.364       0.427       0.440       0.469
+ LOGICAL
+    Category 1       0.532       0.552       0.564       0.627       0.680       0.695       0.710
+    Category 2       0.287       0.305       0.320       0.373       0.435       0.448       0.467
+ JOB
+    Category 1       0.385       0.418       0.429       0.494       0.561       0.579       0.601
+    Category 2       0.389       0.420       0.438       0.506       0.570       0.580       0.610
+ ADULT
+    Category 1       0.500       0.534       0.545       0.615       0.679       0.696       0.724
+    Category 2       0.272       0.304       0.321       0.385       0.455       0.465       0.499
+
+
+     Beginning Time:  20:59:07
+        Ending Time:  21:01:00
+       Elapsed Time:  00:01:53
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2023 Muthen & Muthen

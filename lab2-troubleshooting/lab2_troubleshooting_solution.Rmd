@@ -1,0 +1,120 @@
+---
+title: "Lab 1: LCA Scavenger Hunt"
+author: "IMMERSE Training Team"
+date: "Updated: `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    theme: flatly
+editor_options:
+  markdown:
+    wrap: sentence
+header-includes:
+- \usepackage{wrapfig}     
+---
+
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri(file.path("figures/immerse_hex.png")), 
+               alt = 'logo', 
+               style = 'position:absolute; top:0; right:0px; padding:10px;',
+               width ="200")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE,
+                      message = FALSE,
+                      tidy.opts=list(width.cutoff=60)) #Here, I have made it so that when you knit your .rmd, warnings and messages will not show up in the html markdown. 
+```
+
+------------------------------------------------------------------------
+
+![](figures/IESNewLogo.jpg){style="float: left;" width="300"}
+
+The Institute of Mixture Modeling for Equity-Oriented Researchers, Scholars, and Educators (IMMERSE) is an IES funded training grant (R305B220021) to support education scholars in integrating mixture modeling into their research.
+
+-   Please [visit our website](https://immerse.education.ucsb.edu/) to learn more.
+
+-   Visit our [GitHub](https://github.com/immerse-ucsb) account to access all the IMMERSE materials.
+
+-   Follow us on [Twitter](https://twitter.com/IMMERSE_UCSB)!
+
+How to reference this workshop: Institute of Mixture Modeling for Equity-Oriented Researchers, Scholars, and Educators (2024).
+IMMERSE In-Person Training Workshop (IES No. 305B220021).
+Institute of Education Sciences.
+<https://immerse-ucsb.github.io/pre-training>
+
+------------------------------------------------------------------------
+
+Load packages
+
+```{r}
+library(MplusAutomation)
+library(tidyverse) #collection of R packages designed for data science
+library(here) #helps with filepaths
+library(janitor) #clean_names
+here::i_am("lab2_troubleshooting.Rmd")
+```
+
+------------------------------------------------------------------------
+
+The data can be found in the `data` folder and is called `lsay_subset.csv`.
+
+```{r}
+lsay_data <- read_csv(here("data","lsay_subset.csv")) %>% 
+  clean_names() # make variable names lowercase
+
+# Quick data summary
+summary(lsay_data)
+```
+
+------------------------------------------------------------------------
+
+1.  Without looking at lab 1, get this code to run by identifying the errors in syntax. Successful completion of lab occurs when you’re able to run the analyses! 
+
+```{r, eval = FALSE}
+input  <- mplusObject(
+  TITLE = "LSAY - Lab 2", # >90 characters 
+  VARIABLE = "categorical = enjoy useful logical job adult; ! missing semicolon
+  usevar =  enjoy useful logical job adult;
+  classes = c(4);",
+  
+  ANALYSIS = 
+   "estimator = mlr; 
+    type = mixture;",
+  
+  OUTPUT = "tech11 tech14;", # Space between tech and 11
+  
+  PLOT = "type = plot3; 
+    series = enjoy-adult(*);",
+  
+  usevariables = colnames(lsay_data), # wrong data name
+  rdata = lsay_data)
+
+output <- mplusModeler(input,
+                       dataout=here("mplus", "lsay.dat"), # wrong folder name
+                       modelout=here("mplus","lsay.inp") ,
+                       check=TRUE, run = TRUE, hashfilename = FALSE)
+```
+
+------------------------------------------------------------------------
+
+### Output
+
+When looking at our output for this example, there is a warning message presented:
+
+     IN THE OPTIMIZATION, ONE OR MORE LOGIT THRESHOLDS APPROACHED EXTREME VALUES
+     OF -15.000 AND 15.000 AND WERE FIXED TO STABILIZE MODEL ESTIMATION.  THESE
+     VALUES IMPLY PROBABILITIES OF 0 AND 1.  IN THE MODEL RESULTS SECTION, THESE
+     PARAMETERS HAVE 0 STANDARD ERRORS AND 999 IN THE Z-SCORE AND P-VALUE COLUMNS.
+     
+What does this message mean?
+
+It is telling you that for some classes a latent class indicator has a probability of zero or one.
+
+
+
+
+
+
+
+

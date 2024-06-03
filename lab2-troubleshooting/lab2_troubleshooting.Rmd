@@ -1,0 +1,169 @@
+---
+title: "Lab 1: LCA Scavenger Hunt"
+author: "IMMERSE Training Team"
+date: "Updated: `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    theme: flatly
+editor_options:
+  markdown:
+    wrap: sentence
+header-includes:
+- \usepackage{wrapfig}     
+---
+
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri(file.path("figures/immerse_hex.png")), 
+               alt = 'logo', 
+               style = 'position:absolute; top:0; right:0px; padding:10px;',
+               width ="200")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE,
+                      message = FALSE,
+                      tidy.opts=list(width.cutoff=60)) #Here, I have made it so that when you knit your .rmd, warnings and messages will not show up in the html markdown. 
+```
+
+------------------------------------------------------------------------
+
+![](figures/IESNewLogo.jpg){style="float: left;" width="300"}
+
+The Institute of Mixture Modeling for Equity-Oriented Researchers, Scholars, and Educators (IMMERSE) is an IES funded training grant (R305B220021) to support education scholars in integrating mixture modeling into their research.
+
+-   Please [visit our website](https://immerse.education.ucsb.edu/) to learn more.
+
+-   Visit our [GitHub](https://github.com/immerse-ucsb) account to access all the IMMERSE materials.
+
+-   Follow us on [Twitter](https://twitter.com/IMMERSE_UCSB)!
+
+How to reference this workshop: Institute of Mixture Modeling for Equity-Oriented Researchers, Scholars, and Educators (2024).
+IMMERSE In-Person Training Workshop (IES No. 305B220021).
+Institute of Education Sciences.
+<https://immerse-ucsb.github.io/pre-training>
+
+------------------------------------------------------------------------
+
+Load packages
+
+```{r}
+library(MplusAutomation)
+library(tidyverse) #collection of R packages designed for data science
+library(here) #helps with filepaths
+library(janitor) #clean_names
+library(gt) #creates tables
+here::i_am("lab2_troubleshooting.Rmd")
+```
+------------------------------------------------------------------------
+
+Data source: Longitudinal Study of American Life.
+
+```{r, echo=FALSE, eval=TRUE}
+tribble(
+  ~"Name", ~"Description", 
+  #----------|-------------|,
+  "Enjoy", "I Enjoy Science",
+  "Useful", "Science is Useful in Everyday Problems",
+  "Logical", "Science Helps Logical Thinking",
+  "Job", "Need Science for a Good Job" ,
+  "Adult", "Will Use Science Often as an Adult") %>% 
+  gt() %>% 
+  tab_header(
+    title = "Binary LCA indicators"  # Add a title
+  ) %>%
+  tab_options(
+    table.width = pct(80)
+  ) %>%
+  tab_footnote(
+    footnote = "Longitudinal Study of American Life (LSAL)",
+    location = cells_title())
+```
+
+------------------------------------------------------------------------
+
+The data can be found in the `data` folder and is called `lsay_subset.csv`.
+
+```{r}
+lsay_data <- read_csv(here("data","lsay_subset.csv")) %>% 
+  clean_names() # make variable names lowercase
+
+# Quick data summary
+summary(lsay_data)
+```
+
+------------------------------------------------------------------------
+
+## Troubleshooting
+
+------------------------------------------------------------------------
+
+### Input
+
+Without looking at lab 1, get this code to run by identifying the errors in syntax.
+Successful completion of lab occurs when you're able to run the analyses!
+
+```{r, eval = FALSE}
+input  <- mplusObject(
+  TITLE = "This is an example for a two-class mixture model, please go through the input file and fix any problems that you see.", 
+  VARIABLE = "categorical = enjoy useful logical job adult
+  usevar =  enjoy useful logical job adult;
+  classes = c(4);",
+  
+  ANALYSIS = 
+   "estimator = mlr; 
+    type = mixture;",
+  
+  OUTPUT = "tech 11 tech14",
+  
+  PLOT = "type = plot3; 
+    series = enjoy-adult(*);",
+  
+  usevariables = colnames(data),
+  rdata = data)
+
+output <- mplusModeler(input,
+                       dataout=here("mplus_folder", "lsay.dat"),
+                       modelout=here("mplus_folder","lsay.inp") ,
+                       check=TRUE, run = TRUE, hashfilename = FALSE)
+```
+
+------------------------------------------------------------------------
+
+### Output
+
+When looking at our output for this example, there is a warning message presented:
+
+```         
+ IN THE OPTIMIZATION, ONE OR MORE LOGIT THRESHOLDS APPROACHED EXTREME VALUES
+ OF -15.000 AND 15.000 AND WERE FIXED TO STABILIZE MODEL ESTIMATION.  THESE
+ VALUES IMPLY PROBABILITIES OF 0 AND 1.  IN THE MODEL RESULTS SECTION, THESE
+ PARAMETERS HAVE 0 STANDARD ERRORS AND 999 IN THE Z-SCORE AND P-VALUE COLUMNS.
+```
+
+What does this message mean?
+
+------------------------------------------------------------------------
+
+Examples of messages that should not be ignored and may indicate unreliable output:
+
+```
+WARNING: THE BEST LOGLIKELIHOOD VALUE WAS NOT REPLICATED. THE
+SOLUTION MAY NOT BE TRUSTWORTHY DUE TO LOCAL MAXIMA. INCREASE THE
+NUMBER OF RANDOM STARTS.
+```
+
+```
+ONE OR MORE PARAMETERS WERE FIXED TO AVOID SINGULARITY OF THE
+INFORMATION MATRIX. THE SINGULARITY IS MOST LIKELY BECAUSE THE
+MODEL IS NOT IDENTIFIED, OR BECAUSE OF EMPTY CELLS IN THE JOINT
+DISTRIBUTION OF THE CATEGORICAL VARIABLES IN THE MODEL.
+THE FOLLOWING PARAMETERS WERE FIXED:
+Parameter 3, %C#1%: [ LOGICAL\$1 ]
+```
+
+```
+THE DEGREES OF FREEDOM FOR THIS MODEL ARE NEGATIVE. THE MODEL IS NOT
+IDENTIFIED OR TOO MANY CELLS WERE DELETED. A CHI-SQUARE TEST IS NOT
+AVAILABLE.
+```

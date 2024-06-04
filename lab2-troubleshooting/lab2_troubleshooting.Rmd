@@ -1,5 +1,5 @@
 ---
-title: "Lab 1: LCA Scavenger Hunt"
+title: "Lab 2: Troubleshooting"
 author: "IMMERSE Training Team"
 date: "Updated: `r format(Sys.time(), '%B %d, %Y')`"
 output:
@@ -55,6 +55,7 @@ library(janitor) #clean_names
 library(gt) #creates tables
 here::i_am("lab2_troubleshooting.Rmd")
 ```
+
 ------------------------------------------------------------------------
 
 Data source: Longitudinal Study of American Life.

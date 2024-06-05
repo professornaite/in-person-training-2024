@@ -1,13 +1,14 @@
 TITLE:
 Step 1 - Three-Step - BCH Method
 DATA:
-FILE = "Step1.dat";
- 
+FILE = "C:/Users/dinan/Box/IES_IMMERSE/Training Materials/
+in-person-training-2024/lab5-bch/bch/Step1.dat"; 
 VARIABLE:
-NAMES = enjoy useful logical job adult female math_irt; 
+NAMES = rand lsayid region urban gender mothed fathed raceth math_irt enjoy good
+     undrstnd nervous scared useful logical job adult female; 
  MISSING=.;
- categorical = enjoy-adult; 
-   usevar = enjoy-adult;
+ categorical = enjoy useful logical job adult; 
+   usevar = enjoy useful logical job adult;
     
    classes = c(4); 
     
@@ -24,6 +25,3 @@ SAVEDATA:
 File=3step_savedata.dat;
     Save=bchweights; ! Here we save the BCH weights
     format = free;
-PLOT:
-type = plot3; 
-    series = enjoy-adult(*);

@@ -132,19 +132,14 @@ tab_options(column_labels.font.weight = "bold", row_group.font.weight = "bold")
 
 ------------------------------------------------------------------------
 
-Load data
+The data can be found in the `data` folder and is called `lsay_subset.csv`.
 
-```{r, eval=TRUE}
+```{r}
+lsay_data <- read_csv(here("data","lsay_subset.csv")) %>% 
+  clean_names() %>%   # make variable names lowercase
+  mutate(female = recode(gender, `1` = 0, `2` = 1)) # relabel values from 1,2 to 0,1
 
-lsay_data <- read_csv(here( "data", "lca_lsay_sci.csv"), na = c("9999", "9999.00")) %>%          
-  clean_names() %>%                                                                             
-  dplyr::select(1:5, female, math_irt = mathg12,                                                  
-         enjoy = ab39m,useful = ab39t,                                                             
-         logical = ab39u, job = ab39w, adult = ab39x)   
-
-summary(lsay_data)
 ```
-
 
 ------------------------------------------------------------------------
 
@@ -162,8 +157,8 @@ summary(lsay_data)
 step1_bch  <- mplusObject(
   TITLE = "Step 1 - Three-Step - BCH Method", 
   VARIABLE = 
-  "categorical = enjoy-adult; 
-   usevar = enjoy-adult;
+  "categorical = enjoy useful logical job adult; 
+   usevar = enjoy useful logical job adult;
     
    classes = c(4); 
     
@@ -182,10 +177,6 @@ step1_bch  <- mplusObject(
     format = free;",
 
   OUTPUT = "residual tech11 tech14",
-  
-  PLOT = 
-    "type = plot3; 
-    series = enjoy-adult(*);",
   
   usevariables = colnames(lsay_data),
   rdata = lsay_data)
@@ -210,15 +201,6 @@ output_bch <- readModels(here("bch","bch_one.out"))
 savedata <- as.data.frame(output_bch[["savedata"]])
 ```
 
-Rename the column in savedata named "C" and change to "N"
-
-```{r}
-
-colnames(savedata)[colnames(savedata)=="C"] <- "N"
-
-```
-
-
 ------------------------------------------------------------------------
 
 ### Step 3 - Add Auxiliary Variables and BCH Weights
@@ -232,9 +214,7 @@ step3_bch  <- mplusObject(
   TITLE = "Step3 - 3step LSAY - BCH Method", 
   
   VARIABLE = 
- "nominal=N;
-  usevar = n;
-  classes = c(4);
+ "classes = c(4);
   
   usevar = BCHW1-BCHW4 female math_irt;
   

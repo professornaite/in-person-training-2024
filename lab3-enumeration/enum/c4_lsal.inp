@@ -13,5 +13,6 @@ classes = c(4);
 ANALYSIS:
 estimator = mlr; 
     type = mixture;
+    starts =500 100;
 OUTPUT:
-tech11 tech14;
+tech11 tech14 svalues;

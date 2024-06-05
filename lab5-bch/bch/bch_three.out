@@ -1,0 +1,455 @@
+Mplus VERSION 8.8
+MUTHEN & MUTHEN
+06/05/2023   9:02 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE:
+  Step3 - 3step LSAY - BCH Method
+  DATA:
+  FILE = "Step3.dat";
+
+  VARIABLE:
+  NAMES = ENJOY USEFUL LOGICAL JOB ADULT FEMALE MATH_IRT BCHW1 BCHW2 BCHW3 BCHW4
+       CPROB1 CPROB2 CPROB3 CPROB4 N;
+   MISSING=.;
+   nominal=N;
+    usevar = n;
+    classes = c(4);
+
+    usevar = BCHW1-BCHW4 female math_irt;
+
+    training = BCHW1-BCHW4(bch);
+  ANALYSIS:
+  estimator = mlr;
+    type = mixture;
+    starts = 0;
+  MODEL:
+  %OVERALL%
+
+  math_irt on female; ! covariate as a predictor of the distal outcome
+  C on female;      ! covariate as predictor of C
+
+  %C#1%
+
+  [math_irt](m1);    ! conditional distal mean
+  math_irt;          ! conditional distal variance (freely estimated)
+
+  %C#2%
+
+  [math_irt](m2);
+  math_irt;
+
+  %C#3%
+
+  [math_irt](m3);
+  math_irt;
+
+  %C#4%
+
+  [math_irt](m4);
+  math_irt;
+  MODEL CONSTRAINT:
+  New (diff12 diff13 diff23
+      diff14 diff24 diff34);
+
+      diff12 = m1-m2;  ! test pairwise distal mean differences
+      diff13 = m1-m3;
+      diff23 = m2-m3;
+      diff14 = m1-m4;
+      diff24 = m2-m4;
+      diff34 = m3-m4;
+  MODEL TEST:
+       ! omnibus test of distal means
+      m1=m2;
+      m2=m3;
+      m3=m4;
+
+
+
+INPUT READING TERMINATED NORMALLY
+
+
+
+
+Step3 - 3step LSAY - BCH Method
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                        3061
+
+Number of dependent variables                                    2
+Number of independent variables                                  1
+Number of continuous latent variables                            0
+Number of categorical latent variables                           1
+
+Observed dependent variables
+
+  Continuous
+   MATH_IRT
+
+  Unordered categorical (nominal)
+   N
+
+Observed independent variables
+   FEMALE
+
+Categorical latent variables
+   C
+
+Variables with special functions
+
+  Training variables (BCH)
+   BCHW1       BCHW2       BCHW3       BCHW4
+
+
+Estimator                                                      MLR
+Information matrix                                        OBSERVED
+Optimization Specifications for the Quasi-Newton Algorithm for
+Continuous Outcomes
+  Maximum number of iterations                                 100
+  Convergence criterion                                  0.100D-05
+Optimization Specifications for the EM Algorithm
+  Maximum number of iterations                                 500
+  Convergence criteria
+    Loglikelihood change                                 0.100D-06
+    Relative loglikelihood change                        0.100D-06
+    Derivative                                           0.100D-05
+Optimization Specifications for the M step of the EM Algorithm for
+Categorical Latent variables
+  Number of M step iterations                                    1
+  M step convergence criterion                           0.100D-05
+  Basis for M step termination                           ITERATION
+Optimization Specifications for the M step of the EM Algorithm for
+Censored, Binary or Ordered Categorical (Ordinal), Unordered
+Categorical (Nominal) and Count Outcomes
+  Number of M step iterations                                    1
+  M step convergence criterion                           0.100D-05
+  Basis for M step termination                           ITERATION
+  Maximum value for logit thresholds                            15
+  Minimum value for logit thresholds                           -15
+  Minimum expected cell size for chi-square              0.100D-01
+Maximum number of iterations for H1                           2000
+Convergence criterion for H1                             0.100D-03
+Optimization algorithm                                         EMA
+
+Input data file(s)
+  Step3.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of missing data patterns             2
+     Number of y missing data patterns           2
+     Number of u missing data patterns           0
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+
+     PROPORTION OF DATA PRESENT FOR Y
+
+
+           Covariance Coverage
+              MATH_IRT      FEMALE
+              ________      ________
+ MATH_IRT       0.377
+ FEMALE         0.377         1.000
+
+
+UNIVARIATE PROPORTIONS AND COUNTS FOR CATEGORICAL VARIABLES
+
+    N
+      Category 1    0.282          863.000
+      Category 2    0.203          621.000
+      Category 3    0.197          604.000
+      Category 4    0.318          973.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     MATH_IRT             68.742      -0.377      27.010    0.09%      56.290     66.030     69.470
+            1155.000     224.451      -0.377      99.300    0.43%      73.460     81.780
+     FEMALE                0.481       0.075       0.000   51.88%       0.000      0.000      0.000
+            3061.000       0.250      -1.994       1.000   48.12%       1.000      1.000
+
+     THE MODEL ESTIMATION DID NOT TERMINATE NORMALLY DUE TO A NON-ZERO
+     DERIVATIVE OF THE OBSERVED-DATA LOGLIKELIHOOD.
+
+     THE MCONVERGENCE CRITERION OF THE EM ALGORITHM IS NOT FULFILLED.
+     CHECK YOUR STARTING VALUES OR INCREASE THE NUMBER OF MITERATIONS.
+     ESTIMATES CANNOT BE TRUSTED.  THE LOGLIKELIHOOD DERIVATIVE
+     FOR THE FOLLOWING PARAMETER IS -0.74049413D-01:
+     Parameter 26, %C#4%: [ N#2 ]
+
+
+
+
+
+
+FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES
+BASED ON THE ESTIMATED MODEL
+
+    Latent
+   Classes
+
+       1        828.36177          0.27062
+       2        782.15600          0.25552
+       3        619.12643          0.20226
+       4        831.35579          0.27160
+
+
+FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES
+BASED ON ESTIMATED POSTERIOR PROBABILITIES
+
+    Latent
+   Classes
+
+       1        828.36177          0.27062
+       2        782.15600          0.25552
+       3        619.12643          0.20226
+       4        831.35579          0.27160
+
+
+FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES
+BASED ON THEIR MOST LIKELY LATENT CLASS MEMBERSHIP
+
+Class Counts and Proportions
+
+    Latent
+   Classes
+
+       1              863          0.28193
+       2              621          0.20287
+       3              604          0.19732
+       4              973          0.31787
+
+
+Average Latent Class Probabilities for Most Likely Latent Class Membership (Row)
+by Latent Class (Column)
+
+           1        2        3        4
+
+    1   1.131    -.039    -.102    0.010
+    2   -.043    1.394    0.014    -.365
+    3   -.210    0.006    1.208    -.004
+    4   0.006    -.055    -.032    1.081
+
+
+Classification Probabilities for the Most Likely Latent Class Membership (Column)
+by Latent Class (Row)
+
+           1        2        3        4
+
+    1   1.178    -.032    -.153    0.007
+    2   -.043    1.107    0.005    -.068
+    3   -.142    0.014    1.178    -.050
+    4   0.010    -.273    -.003    1.265
+
+
+Logits for the Classification Probabilities for the Most Likely Latent Class Membership (Column)
+by Latent Class (Row)
+
+              1        2        3        4
+
+    1      5.119   -8.860   -8.860    0.000
+    2      0.000   13.917    8.440    0.000
+    3      0.000    9.550   13.980    0.000
+    4     -4.804  -14.051  -14.051    0.000
+
+
+MODEL RESULTS
+
+                    Estimate
+
+Latent Class 1
+
+ MATH_IRT   ON
+    FEMALE            -0.380
+
+ Means
+    N#1                5.119
+    N#2              -15.000
+    N#3              -15.000
+
+ Intercepts
+    MATH_IRT          71.970
+
+ Residual Variances
+    MATH_IRT         224.334
+
+Latent Class 2
+
+ MATH_IRT   ON
+    FEMALE            -0.380
+
+ Means
+    N#1                0.000
+    N#2              706.763
+    N#3              701.287
+
+ Intercepts
+    MATH_IRT          66.371
+
+ Residual Variances
+    MATH_IRT         217.340
+
+Latent Class 3
+
+ MATH_IRT   ON
+    FEMALE            -0.380
+
+ Means
+    N#1                0.000
+    N#2              702.163
+    N#3              706.592
+
+ Intercepts
+    MATH_IRT          68.403
+
+ Residual Variances
+    MATH_IRT         233.231
+
+Latent Class 4
+
+ MATH_IRT   ON
+    FEMALE            -0.380
+
+ Means
+    N#1               -4.804
+    N#2              -15.000
+    N#3              -15.000
+
+ Intercepts
+    MATH_IRT          68.374
+
+ Residual Variances
+    MATH_IRT         205.526
+
+Categorical Latent Variables
+
+ C#1        ON
+    FEMALE            -0.851
+
+ C#2        ON
+    FEMALE            -0.554
+
+ C#3        ON
+    FEMALE            -0.597
+
+ Intercepts
+    C#1                0.420
+    C#2                0.235
+    C#3                0.022
+
+New/Additional Parameters
+    DIFF12             5.599
+    DIFF13             3.568
+    DIFF23            -2.031
+    DIFF14             3.596
+    DIFF24            -2.003
+    DIFF34             0.028
+
+
+MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES
+
+     %OVERALL%
+
+     math_irt ON female;
+
+     c#1 ON female*-0.85097;
+     c#2 ON female*-0.55399;
+     c#3 ON female*-0.59741;
+
+     [ c#1*0.42014 ];
+     [ c#2*0.23526 ];
+     [ c#3*0.02150 ];
+
+     %C#1%
+
+     math_irt ON female*-0.37989 (2);
+
+     [ math_irt*71.97029 ] (m1);
+     [ n#1*5.11901 ];
+     [ n#2*-15 ];
+     [ n#3*-15 ];
+
+     math_irt*224.33403;
+
+     %C#2%
+
+     math_irt ON female*-0.37989 (2);
+
+     [ math_irt*66.37105 ] (m2);
+     [ n#1*0 ];
+     [ n#2*706.76349 ];
+     [ n#3*701.28656 ];
+
+     math_irt*217.34016;
+
+     %C#3%
+
+     math_irt ON female*-0.37989 (2);
+
+     [ math_irt*68.40252 ] (m3);
+     [ n#1*0 ];
+     [ n#2*702.16266 ];
+     [ n#3*706.59235 ];
+
+     math_irt*233.23119;
+
+     %C#4%
+
+     math_irt ON female*-0.37989 (2);
+
+     [ math_irt*68.37415 ] (m4);
+     [ n#1*-4.80403 ];
+     [ n#2*-15 ];
+     [ n#3*-15 ];
+
+     math_irt*205.52562;
+
+     ! NEW statements in MODEL CONSTRAINT
+     NEW(diff12*5.59924);
+     NEW(diff13*3.56777);
+     NEW(diff23*-2.03147);
+     NEW(diff14*3.59614);
+     NEW(diff24*-2.00311);
+     NEW(diff34*0.02836);
+
+
+
+
+DIAGRAM INFORMATION
+
+  Mplus diagrams are currently not available for Mixture analysis.
+  No diagram output was produced.
+
+
+     Beginning Time:  21:02:15
+        Ending Time:  21:02:23
+       Elapsed Time:  00:00:08
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2022 Muthen & Muthen

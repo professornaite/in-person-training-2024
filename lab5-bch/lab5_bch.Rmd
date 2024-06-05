@@ -1,0 +1,343 @@
+---
+title: "Lab 5: BCH Approach"
+author: "IMMERSE Training Team"
+date: "Updated: `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    theme: flatly
+editor_options:
+  markdown:
+    wrap: sentence
+header-includes:
+- \usepackage{wrapfig}     
+---
+
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri(file.path("figures/immerse_hex.png")), 
+               alt = 'logo', 
+               style = 'position:absolute; top:0; right:0px; padding:10px;',
+               width ="200")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE,
+                      message = FALSE,
+                      tidy.opts=list(width.cutoff=60)) #Here, I have made it so that when you knit your .rmd, warnings and messages will not show up in the html markdown. 
+```
+
+------------------------------------------------------------------------
+
+![](figures/IESNewLogo.jpg){style="float: left;" width="300"}
+
+The Institute of Mixture Modeling for Equity-Oriented Researchers, Scholars, and Educators (IMMERSE) is an IES funded training grant (R305B220021) to support education scholars in integrating mixture modeling into their research.
+
+-   Please [visit our website](https://immerse.education.ucsb.edu/) to learn more.
+
+-   Visit our [GitHub](https://github.com/immerse-ucsb) account to access all the IMMERSE materials.
+
+-   Follow us on [Twitter](https://twitter.com/IMMERSE_UCSB)!
+
+How to reference this workshop: Institute of Mixture Modeling for Equity-Oriented Researchers, Scholars, and Educators (2024).
+IMMERSE In-Person Training Workshop (IES No. 305B220021).
+Institute of Education Sciences.
+<https://immerse-ucsb.github.io/cohort-two/pre-training>
+
+------------------------------------------------------------------------
+
+Load packages
+
+```{r}
+library(poLCA) # contains the `cheating` dataset
+library(MplusAutomation)
+library(tidyverse) #collection of R packages designed for data science
+library(here) #helps with filepaths
+library(janitor) #clean_names
+library(gt) # create tables
+library(cowplot) # a ggplot theme
+library(DiagrammeR) # create path diagrams
+library(glue) # allows us to paste expressions into R code
+library(data.table) # used for `melt()` function
+here::i_am("lab5_bch.Rmd")
+```
+
+------------------------------------------------------------------------
+
+**Data source:**
+ The second examples utilizes the public-use dataset, *The Longitudinal Survey of American Youth* (**LSAY**): [See documentation here](https://www.lsay.org/)
+
+------------------------------------------------------------------------
+
+
+```{r, echo=FALSE, eval=TRUE, fig.align='center'}
+
+grViz(" digraph cfa_model {
+
+# The `graph` statement - No editing needed
+
+    graph [layout = dot, overlap = true]
+ 
+# Two `node` statements
+ 
+# One for measured variables (box) 
+
+    node [shape=box]
+    Enjoy Useful Logical Job Adult Female MathScore;
+ 
+# One for latent variables (circle) 
+ 
+    node [shape=circle]
+    science [label=<Science <br/>Attitudes <br/>C<sub>k=4</sub>>];
+    
+# `edge` statements
+ 
+    edge [minlen = 2]
+    science -> {Enjoy Useful Logical Job Adult}
+    science -> MathScore [minlen = 4];
+    Female -> science [minlen = 4];
+    
+ {rank = same; science; Female; MathScore}
+ 
+ }") 
+```
+
+
+Integrate covariates and distals with a mixture model
+
+------------------------------------------------------------------------
+
+Application: Longitudinal Study of American Youth, **Science Attitudes**
+
+```{r, eval=TRUE, echo=FALSE}
+### Take a look at the indicators that compose the LCA ###
+
+tribble(
+~"Name", ~" Variable Description", 
+#----------|-------------|,
+"enjoy"    , "I enjoy math." ,
+"useful"   , "Math is useful in everyday problems." ,
+"logical"  , "Math helps a person think logically." ,
+"job"      , "It is important to know math to get a good job." ,
+"adult"    , "I will use math in many ways as an adult.",
+"female"   , "Self-reported student gender (0=Male, 1=Female).",
+"math_irt" , "Standardized IRT math test score - 12th grade." ) %>% 
+gt() %>% 
+tab_header(title = md("**LCA Indicators & Auxiliary Variables: Math Attitudes Example**"), subtitle = md("&nbsp;")) %>%
+tab_row_group(group = "", rows = 1:5) %>% 
+tab_row_group(group = "Auxiliary Variables", rows = 6:7) %>%
+row_group_order(groups = c("","Auxiliary Variables")) %>% 
+tab_options(column_labels.font.weight = "bold", row_group.font.weight = "bold") 
+
+```
+
+------------------------------------------------------------------------
+
+Load data
+
+```{r, eval=TRUE}
+
+lsay_data <- read_csv(here( "data", "lca_lsay_sci.csv"), na = c("9999", "9999.00")) %>%          
+  clean_names() %>%                                                                             
+  dplyr::select(1:5, female, math_irt = mathg12,                                                  
+         enjoy = ab39m,useful = ab39t,                                                             
+         logical = ab39u, job = ab39w, adult = ab39x)   
+
+summary(lsay_data)
+```
+
+
+------------------------------------------------------------------------
+
+
+## BCH Method
+
+------------------------------------------------------------------------
+
+### Step 1 - Class Enumeration w/ Auxiliary Specification and BCH Weights
+
+------------------------------------------------------------------------
+
+```{r, eval = FALSE}
+
+step1_bch  <- mplusObject(
+  TITLE = "Step 1 - Three-Step - BCH Method", 
+  VARIABLE = 
+  "categorical = enjoy-adult; 
+   usevar = enjoy-adult;
+    
+   classes = c(4); 
+    
+   auxiliary =   ! list all potential covariates and distals here
+   female        ! covariate
+   math_irt;      ! distal math test score in 12th grade ",
+  
+  ANALYSIS = 
+   "estimator = mlr; 
+    type = mixture;
+    starts = 500 100;",
+  
+  SAVEDATA = 
+   "File=3step_savedata.dat;
+    Save=bchweights; ! Here we save the BCH weights
+    format = free;",
+
+  OUTPUT = "residual tech11 tech14",
+  
+  PLOT = 
+    "type = plot3; 
+    series = enjoy-adult(*);",
+  
+  usevariables = colnames(lsay_data),
+  rdata = lsay_data)
+
+step1_fit_bch <- mplusModeler(step1_bch,
+                            dataout=here("bch", "Step1.dat"),
+                            modelout=here("bch", "bch_one.inp") ,
+                            check=TRUE, run = TRUE, hashfilename = FALSE)
+```
+
+------------------------------------------------------------------------
+
+### Step 2 - Extract BCH Weights
+
+------------------------------------------------------------------------
+
+Extract saved dataset which is part of the mplusObject "step1_fit_bch"
+
+```{r}
+output_bch <- readModels(here("bch","bch_one.out"))
+
+savedata <- as.data.frame(output_bch[["savedata"]])
+```
+
+Rename the column in savedata named "C" and change to "N"
+
+```{r}
+
+colnames(savedata)[colnames(savedata)=="C"] <- "N"
+
+```
+
+
+------------------------------------------------------------------------
+
+### Step 3 - Add Auxiliary Variables and BCH Weights
+
+------------------------------------------------------------------------
+
+Model with 1 covariate and 1 distal outcome
+
+```{r, eval = FALSE}
+step3_bch  <- mplusObject(
+  TITLE = "Step3 - 3step LSAY - BCH Method", 
+  
+  VARIABLE = 
+ "nominal=N;
+  usevar = n;
+  classes = c(4);
+  
+  usevar = BCHW1-BCHW4 female math_irt;
+  
+  training = BCHW1-BCHW4(bch);" ,
+  
+  ANALYSIS = 
+ "estimator = mlr; 
+  type = mixture; 
+  starts = 0;",
+  
+  MODEL =
+  glue(
+ " %OVERALL%
+  
+  math_irt on female; ! covariate as a predictor of the distal outcome
+  C on female;      ! covariate as predictor of C
+
+  %C#1%
+     
+  [math_irt](m1);    ! conditional distal mean 
+  math_irt;          ! conditional distal variance (freely estimated)
+
+  %C#2%
+  
+  [math_irt](m2);
+  math_irt;
+  
+  %C#3%
+  
+  [math_irt](m3);
+  math_irt;
+
+  %C#4%
+  
+  [math_irt](m4);
+  math_irt; "),
+  
+  MODELCONSTRAINT = 
+   "New (diff12 diff13 diff23 
+    diff14 diff24 diff34);
+  
+    diff12 = m1-m2;  ! test pairwise distal mean differences
+    diff13 = m1-m3;
+    diff23 = m2-m3;
+    diff14 = m1-m4;
+    diff24 = m2-m4;
+    diff34 = m3-m4;",
+  
+  MODELTEST = "     ! omnibus test of distal means
+    m1=m2;
+    m2=m3;
+    m3=m4;",
+ 
+  usevariables = colnames(savedata), 
+  rdata = savedata)
+
+step3_fit_bch <- mplusModeler(step3_bch,
+               dataout=here("bch","Step3.dat"), 
+               modelout=here("bch", "bch_three.inp"), 
+               check=TRUE, run = TRUE, hashfilename = FALSE)
+```
+
+
+------------------------------------------------------------------------
+
+# References
+
+Drew A. Linzer, Jeffrey B. Lewis (2011).
+poLCA: An R Package for Polytomous Variable Latent Class Analysis.
+Journal of Statistical Software, 42(10), 1-29.
+URL <http://www.jstatsoft.org/v42/i10/>.
+
+Hallquist, M. N., & Wiley, J. F.
+(2018).
+MplusAutomation: An R Package for Facilitating Large-Scale Latent Variable Analyses in Mplus.
+Structural equation modeling: a multidisciplinary journal, 25(4), 621-638.
+
+Miller, J. D., Hoffer, T., Suchner, R., Brown, K., & Nelson, C.
+(1992).
+LSAY codebook.
+Northern Illinois University.
+
+Muthén, B. O., Muthén, L. K., & Asparouhov, T.
+(2017).
+Regression and mediation analysis using Mplus.
+Los Angeles, CA: Muthén & Muthén.
+
+Muthén, L.K.
+and Muthén, B.O.
+(1998-2017).
+Mplus User's Guide.
+Eighth Edition.
+Los Angeles, CA: Muthén & Muthén
+
+R Core Team (2017).
+R: A language and environment for statistical computing.
+R Foundation for Statistical Computing, Vienna, Austria.
+URL <http://www.R-project.org/>
+
+Wickham et al., (2019).
+Welcome to the tidyverse.
+Journal of Open Source Software, 4(43), 1686, <https://doi.org/10.21105/joss.01686>
+
+------------------------------------------------------------------------
+
+![](figures/UCSB_Navy_mark.png){width="75%"}

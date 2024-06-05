@@ -1,0 +1,60 @@
+TITLE:
+Step3 - 3step LSAY - BCH Method
+DATA:
+FILE = "Step3.dat";
+ 
+VARIABLE:
+NAMES = ENJOY USEFUL LOGICAL JOB ADULT FEMALE MATH_IRT BCHW1 BCHW2 BCHW3 BCHW4
+     CPROB1 CPROB2 CPROB3 CPROB4 N; 
+ MISSING=.;
+ nominal=N;
+  usevar = n;
+  classes = c(4);
+  
+  usevar = BCHW1-BCHW4 female math_irt;
+  
+  training = BCHW1-BCHW4(bch);
+ANALYSIS:
+estimator = mlr; 
+  type = mixture; 
+  starts = 0;
+MODEL:
+%OVERALL%
+
+math_irt on female; ! covariate as a predictor of the distal outcome
+C on female;      ! covariate as predictor of C
+
+%C#1%
+   
+[math_irt](m1);    ! conditional distal mean 
+math_irt;          ! conditional distal variance (freely estimated)
+
+%C#2%
+
+[math_irt](m2);
+math_irt;
+
+%C#3%
+
+[math_irt](m3);
+math_irt;
+
+%C#4%
+
+[math_irt](m4);
+math_irt; 
+MODEL CONSTRAINT:
+New (diff12 diff13 diff23 
+    diff14 diff24 diff34);
+  
+    diff12 = m1-m2;  ! test pairwise distal mean differences
+    diff13 = m1-m3;
+    diff23 = m2-m3;
+    diff14 = m1-m4;
+    diff24 = m2-m4;
+    diff34 = m3-m4;
+MODEL TEST:
+     ! omnibus test of distal means
+    m1=m2;
+    m2=m3;
+    m3=m4;

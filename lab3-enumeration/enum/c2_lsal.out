@@ -1,6 +1,6 @@
 Mplus VERSION 8.10
 MUTHEN & MUTHEN
-06/02/2024   8:55 PM
+06/04/2024   4:58 PM
 
 INPUT INSTRUCTIONS
 
@@ -19,8 +19,9 @@ INPUT INSTRUCTIONS
   ANALYSIS:
   estimator = mlr;
       type = mixture;
+      starts =500 100;
   OUTPUT:
-  tech11 tech14;
+  tech11 tech14 svalues;
 
 
 
@@ -84,8 +85,8 @@ Maximum number of iterations for H1                           2000
 Convergence criterion for H1                             0.100D-03
 Optimization algorithm                                         EMA
 Random Starts Specifications
-  Number of initial stage random starts                         20
-  Number of final stage optimizations                            4
+  Number of initial stage random starts                        500
+  Number of final stage optimizations                          100
   Number of initial stage iterations                            10
   Initial stage convergence criterion                    0.100D+01
   Random starts scale                                    0.500D+01
@@ -145,10 +146,106 @@ RANDOM STARTS RESULTS RANKED FROM THE BEST TO THE WORST LOGLIKELIHOOD VALUES
 
 Final stage loglikelihood values at local maxima, seeds, and initial stage start numbers:
 
-           -7191.878  903420           5
+           -7191.878  505879           424
+           -7191.878  499150           216
+           -7191.878  915642           40
            -7191.878  637345           19
+           -7191.878  741484           441
+           -7191.878  614009           317
+           -7191.878  872743           374
+           -7191.878  605358           321
+           -7191.878  220454           288
+           -7191.878  150531           154
+           -7191.878  850840           232
+           -7191.878  303634           169
+           -7191.878  784664           75
+           -7191.878  76337            76
+           -7191.878  507154           387
+           -7191.878  22089            143
+           -7191.878  137377           397
+           -7191.878  948615           140
+           -7191.878  597614           284
+           -7191.878  202790           198
+           -7191.878  717754           180
+           -7191.878  318230           46
+           -7191.878  284109           82
+           -7191.878  862607           468
+           -7191.878  466971           109
            -7191.878  107446           12
+           -7191.878  830392           35
+           -7191.878  259507           53
+           -7191.878  317640           437
+           -7191.878  991329           182
+           -7191.878  951709           348
+           -7191.878  12477            155
+           -7191.878  836066           372
+           -7191.878  483369           270
+           -7191.878  960438           116
+           -7191.878  551639           55
+           -7191.878  112586           494
+           -7191.878  456213           160
+           -7191.878  475420           71
+           -7191.878  794236           127
+           -7191.878  407168           44
+           -7191.878  856536           144
+           -7191.878  207896           25
+           -7191.878  118421           139
+           -7191.878  354208           196
+           -7191.878  321390           133
+           -7191.878  728038           177
+           -7191.878  569131           26
+           -7191.878  311214           64
+           -7191.878  853195           431
+           -7191.878  965994           396
+           -7191.878  966014           37
+           -7191.878  484687           306
+           -7191.878  152496           123
+           -7191.878  175199           247
+           -7191.878  695155           150
+           -7191.878  267983           228
+           -7191.878  636396           168
+           -7191.878  366533           484
+           -7191.878  846194           93
+           -7191.878  502532           445
+           -7191.878  923437           398
+           -7191.878  195763           358
+           -7191.878  73576            213
+           -7191.878  268217           83
+           -7191.878  724519           333
+           -7191.878  286735           175
+           -7191.878  903369           134
+           -7191.878  691234           250
+           -7191.878  848890           95
+           -7191.878  471438           252
+           -7191.878  206099           363
+           -7191.878  40340            188
+           -7191.878  347515           24
+           -7191.878  392751           480
+           -7191.878  185071           370
+           -7191.878  193569           440
+           -7191.878  539751           459
+           -7191.878  316165           299
+           -7191.878  395754           388
+           -7191.878  602797           336
+           -7191.878  132336           362
+           -7191.878  626891           32
+           -7191.878  699554           427
+           -7191.878  137305           379
+           -7191.878  760878           249
+           -7191.878  370466           41
+           -7191.878  301180           236
+           -7191.878  216565           474
+           -7191.878  422103           62
+           -7191.878  188498           258
+           -7191.878  985387           381
+           -7191.878  92689            304
            -7191.878  127215           9
+           -7191.878  931874           141
+           -7191.878  39136            226
+           -7191.878  153394           429
+           -7191.878  371246           101
+           -7191.878  263049           454
+           -7191.878  349360           464
 
 
 
@@ -214,8 +311,8 @@ BASED ON THE ESTIMATED MODEL
     Latent
    Classes
 
-       1       1872.14604          0.69987
-       2        802.85396          0.30013
+       1       1872.15419          0.69987
+       2        802.84581          0.30013
 
 
 FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES
@@ -224,8 +321,8 @@ BASED ON ESTIMATED POSTERIOR PROBABILITIES
     Latent
    Classes
 
-       1       1872.14604          0.69987
-       2        802.85396          0.30013
+       1       1872.15419          0.69987
+       2        802.84581          0.30013
 
 
 FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES
@@ -298,7 +395,7 @@ Latent Class 2
 Categorical Latent Variables
 
  Means
-    C#1                0.847      0.095      8.904      0.000
+    C#1                0.847      0.095      8.905      0.000
 
 
 QUALITY OF NUMERICAL RESULTS
@@ -324,7 +421,7 @@ Latent Class 1
     Category 1         0.181      0.014     13.293      0.000
     Category 2         0.819      0.014     60.000      0.000
  JOB
-    Category 1         0.085      0.010      8.323      0.000
+    Category 1         0.085      0.010      8.324      0.000
     Category 2         0.915      0.010     89.956      0.000
  ADULT
     Category 1         0.104      0.012      8.368      0.000
@@ -343,7 +440,7 @@ Latent Class 2
     Category 2         0.224      0.025      8.845      0.000
  JOB
     Category 1         0.659      0.030     22.284      0.000
-    Category 2         0.341      0.030     11.533      0.000
+    Category 2         0.341      0.030     11.532      0.000
  ADULT
     Category 1         0.753      0.028     26.777      0.000
     Category 2         0.247      0.028      8.802      0.000
@@ -363,16 +460,40 @@ Latent Class 1 Compared to Latent Class 2
  LOGICAL
     Category > 1      15.633      2.305     11.710     20.870
  JOB
-    Category > 1      20.882      3.172     15.505     28.124
+    Category > 1      20.883      3.172     15.506     28.124
  ADULT
-    Category > 1      26.294      4.241     19.167     36.071
+    Category > 1      26.294      4.241     19.167     36.072
+
+
+MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES
+
+     %OVERALL%
+
+     [ c#1*0.84668 ];
+
+     %C#1%
+
+     [ enjoy$1*-1.23202 ];
+     [ useful$1*-2.08703 ];
+     [ logical$1*-1.50708 ];
+     [ job$1*-2.38023 ];
+     [ adult$1*-2.15678 ];
+
+     %C#2%
+
+     [ enjoy$1*0.31129 ];
+     [ useful$1*1.17170 ];
+     [ logical$1*1.24228 ];
+     [ job$1*0.65868 ];
+     [ adult$1*1.11258 ];
+
 
 
 TECHNICAL 11 OUTPUT
 
      Random Starts Specifications for the k-1 Class Analysis Model
-        Number of initial stage random starts                  20
-        Number of final stage optimizations                     4
+        Number of initial stage random starts                 500
+        Number of final stage optimizations                   100
 
 
 
@@ -394,8 +515,8 @@ TECHNICAL 11 OUTPUT
 TECHNICAL 14 OUTPUT
 
      Random Starts Specifications for the k-1 Class Analysis Model
-        Number of initial stage random starts                  20
-        Number of final stage optimizations                     4
+        Number of initial stage random starts                 500
+        Number of final stage optimizations                   100
 
      Random Starts Specification for the k-1 Class Model for Generated Data
         Number of initial stage random starts                   0
@@ -416,9 +537,9 @@ TECHNICAL 14 OUTPUT
           Successful Bootstrap Draws                            5
 
 
-     Beginning Time:  20:55:50
-        Ending Time:  20:55:51
-       Elapsed Time:  00:00:01
+     Beginning Time:  16:58:32
+        Ending Time:  16:58:39
+       Elapsed Time:  00:00:07
 
 
 

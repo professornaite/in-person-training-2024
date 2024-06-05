@@ -1,0 +1,404 @@
+---
+title: "Lab 4: Automatic Three-Step"
+author: "IMMERSE Training Team"
+date: "Updated: `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    theme: flatly
+editor_options:
+  markdown:
+    wrap: sentence
+header-includes:
+- \usepackage{wrapfig}     
+---
+
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri(file.path("figures/immerse_hex.png")), 
+               alt = 'logo', 
+               style = 'position:absolute; top:0; right:0px; padding:10px;',
+               width ="200")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE,
+                      message = FALSE,
+                      tidy.opts=list(width.cutoff=60)) #Here, I have made it so that when you knit your .rmd, warnings and messages will not show up in the html markdown. 
+```
+
+------------------------------------------------------------------------
+
+![](figures/IESNewLogo.jpg){style="float: left;" width="300"}
+
+The Institute of Mixture Modeling for Equity-Oriented Researchers, Scholars, and Educators (IMMERSE) is an IES funded training grant (R305B220021) to support education scholars in integrating mixture modeling into their research.
+
+-   Please [visit our website](https://immerse.education.ucsb.edu/) to learn more.
+
+-   Visit our [GitHub](https://github.com/immerse-ucsb) account to access all the IMMERSE materials.
+
+-   Follow us on [Twitter](https://twitter.com/IMMERSE_UCSB)!
+
+How to reference this workshop: Institute of Mixture Modeling for Equity-Oriented Researchers, Scholars, and Educators (2024).
+IMMERSE In-Person Training Workshop (IES No. 305B220021).
+Institute of Education Sciences.
+<https://immerse-ucsb.github.io/cohort-two/pre-training>
+
+------------------------------------------------------------------------
+
+Automated Three-Step
+
+* DU3STEP (Distal outcomes)
+* R3STEP (Latent class predictor)
+
+------------------------------------------------------------------------
+
+Load packages
+
+```{r}
+library(poLCA) # contains the `cheating` dataset
+library(MplusAutomation)
+library(tidyverse) #collection of R packages designed for data science
+library(here) #helps with filepaths
+library(janitor) #clean_names
+library(gt) # create tables
+library(cowplot) # a ggplot theme
+library(DiagrammeR) # create path diagrams
+library(glue) # allows us to paste expressions into R code
+library(data.table) # used for `melt()` function
+here::i_am("lab4_automatic.Rmd")
+```
+
+------------------------------------------------------------------------
+
+**Data source:**
+
+Example utilizes a dataset on undergraduate *Cheating* available from the `poLCA` package (Dayton, 1998): [See documentation here](https://cran.r-project.org/web/packages/poLCA/poLCA.pdf)
+
+------------------------------------------------------------------------
+
+# Automated Three-Step
+
+**Note**: Prior to adding covariates or distals enumeration must be conducted.
+See Lab 6 for examples of enumeration with MplusAutomation.
+
+------------------------------------------------------------------------
+
+## Application: Undergraduate Cheating behavior
+
+------------------------------------------------------------------------
+
+"Dichotomous self-report responses by 319 undergraduates to four questions about cheating behavior" (poLCA, 2016).
+
+------------------------------------------------------------------------
+
+Prepare data
+
+```{r}
+
+data(cheating)
+
+cheating <- cheating %>% clean_names() 
+
+df_cheat <-  cheating %>%                                  
+  dplyr::select(1:4) %>%                                  
+  mutate_all(funs(.-1)) %>%                                
+  mutate(gpa = cheating$gpa)
+
+# Detaching packages that mask the dpylr functions 
+detach(package:poLCA, unload = TRUE)
+detach(package:MASS, unload = TRUE)
+```
+
+------------------------------------------------------------------------
+
+## DU3STEP
+
+------------------------------------------------------------------------
+
+```{r, echo=FALSE, eval=TRUE, fig.align='center'}
+
+grViz(" digraph cfa_model {
+
+# The `graph` statement - No editing needed
+
+    graph [layout = dot, overlap = true]
+ 
+# Two `node` statements
+ 
+# One for measured variables (box) 
+
+    node [shape=box]
+    GPA LieExam LiePaper Fraud CopyExam;
+ 
+# One for latent variables (circle) 
+ 
+    node [shape=circle]
+    bully [label=<Cheating <br/>Behavior <br/>C<sub>k=2</sub>>];
+    
+# `edge` statements
+ 
+    edge [minlen = 2]
+    bully -> {LieExam LiePaper Fraud CopyExam}
+    bully -> GPA [minlen = 4];
+    
+ {rank = same; bully; GPA}
+ 
+ }") 
+```
+
+**DU3STEP** incorporates distal outcome variables (assumed to have unequal means and variances) with mixture models.
+
+------------------------------------------------------------------------
+
+### Run the **DU3step** model with `gpa` as distal outcome
+
+```{r, eval = FALSE}
+
+m_stepdu  <- mplusObject(
+  TITLE = "DU3STEP - GPA as Distal", 
+  VARIABLE = 
+   "categorical = lieexam-copyexam; 
+    usevar = lieexam-copyexam;
+    auxiliary = gpa (du3step);
+    classes = c(2);",
+  
+  ANALYSIS = 
+   "estimator = mlr; 
+    type = mixture;
+    starts = 500 100; 
+    processors = 10;",
+  
+  OUTPUT = "sampstat patterns tech11 tech14;",
+  
+  PLOT = 
+    "type = plot3; 
+     series = lieexam-copyexam(*);",
+  
+  usevariables = colnames(df_cheat),
+  rdata = df_cheat)
+
+m_stepdu_fit <- mplusModeler(m_stepdu, 
+                            dataout=here("auto", "du3step.dat"),
+                            modelout=here("auto", "c2_du.inp") ,
+                            check=TRUE, run = TRUE, hashfilename = FALSE)
+
+```
+
+------------------------------------------------------------------------
+
+### Plot Distal Outcome
+
+```{r}
+modelParams <- readModels(here("auto", "c2_du.out"))
+
+# Extract class size 
+c_size <- as.data.frame(modelParams[["class_counts"]][["modelEstimated"]][["proportion"]]) %>% 
+  rename("cs" = 1) %>% 
+  mutate(cs = round(cs*100, 2))
+
+c_size_val <- paste0("C", 1:nrow(c_size), glue(" ({c_size[1:nrow(c_size),]}%)"))
+
+
+# Extract information as data frame
+estimates <- as.data.frame(modelParams[["lcCondMeans"]][["overall"]]) %>%
+  melt(id.vars = "var") %>%
+  mutate(variable = as.character(variable),
+         LatentClass = case_when(
+           endsWith(variable, "1") ~ c_size_val[1],
+           endsWith(variable, "2") ~ c_size_val[2])) %>% #Add to this based on the number of classes you have
+  head(-3) %>% 
+  pivot_wider(names_from = variable, values_from = value) %>% 
+  unite("mean", contains("m"), na.rm = TRUE) %>% 
+  unite("se", contains("se"), na.rm = TRUE) %>% 
+  mutate(across(c(mean, se), as.numeric))
+
+# Add labels (NOTE: You must change the labels to match the significance testing!!) 
+value_labels <- paste0(estimates$mean, c(" a"," b"))
+
+# Plot bar graphs
+estimates %>%
+  ggplot(aes(fill = LatentClass, y = mean, x = LatentClass)) +
+  geom_bar(position = "dodge", stat = "identity", color = "black") +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se),
+                size=.3,    
+                width=.2,
+                position=position_dodge(.9)) +
+  geom_text(aes(y = mean, label = value_labels), 
+            family = "serif", size = 4,
+            position=position_dodge(.9),
+            vjust = 8) +
+  scale_fill_grey(start = .5, end = .7) +
+  labs(y="GPA", x="") +
+  theme_cowplot() +
+  theme(text = element_text(family = "serif", size = 12),
+        axis.text.x = element_text(size=12),
+        legend.position="none") +
+  coord_cartesian(expand = FALSE, 
+                  ylim=c(0,max(estimates$mean*1.5))) # Change ylim based on distal outcome rang
+
+
+# Save plot
+ggsave(here("figures","DU3STEP_plot.jpeg"),                
+       dpi=300, width=10, height = 7, units="in")  
+```
+
+------------------------------------------------------------------------
+
+## R3STEP
+
+------------------------------------------------------------------------
+
+```{r, echo=FALSE, eval=TRUE, fig.align='center'}
+
+grViz(" digraph cfa_model {
+
+# The `graph` statement - No editing needed
+
+    graph [layout = dot, overlap = true]
+ 
+# Two `node` statements
+ 
+# One for measured variables (box) 
+
+    node [shape=box]
+    GPA LieExam LiePaper Fraud CopyExam;
+ 
+# One for latent variables (circle) 
+ 
+    node [shape=circle]
+    bully [label=<Cheating <br/>Behavior <br/>C<sub>k=2</sub>>];
+    
+# `edge` statements
+ 
+    edge [minlen = 2]
+    bully -> {LieExam LiePaper Fraud CopyExam}
+    GPA -> bully [minlen = 4];
+    
+ {rank = same; bully; GPA}
+ 
+ }") 
+```
+
+**R3STEP** incorporates latent class predictors with mixture models.
+
+------------------------------------------------------------------------
+
+### Run the **R3STEP** model with `gpa` as the latent class predictor
+
+```{r, eval = FALSE}
+
+m_stepr  <- mplusObject(
+  TITLE = "R3STEP - GPA as Predictor", 
+  VARIABLE = 
+   "categorical = lieexam-copyexam; 
+    usevar = lieexam-copyexam;
+    auxiliary = gpa (R3STEP);
+    classes = c(2);",
+  
+  ANALYSIS = 
+   "estimator = mlr; 
+    type = mixture;
+    starts = 500 100; 
+    processors = 10;",
+  
+  OUTPUT = "sampstat patterns tech11 tech14;",
+  
+  PLOT = 
+    "type = plot3; 
+     series = lieexam-copyexam(*);",
+  
+  usevariables = colnames(df_cheat),
+  rdata = df_cheat)
+
+m_stepr_fit <- mplusModeler(m_stepr, 
+                            dataout=here("auto", "r3step.dat"),
+                            modelout=here("auto", "c2_r.inp") ,
+                            check=TRUE, run = TRUE, hashfilename = FALSE)
+
+```
+
+------------------------------------------------------------------------
+
+### Regression slopes and odds ratios
+
+```{r, eval = FALSE}
+TESTS OF CATEGORICAL LATENT VARIABLE MULTINOMIAL LOGISTIC REGRESSIONS USING
+THE 3-STEP PROCEDURE
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+ C#1      ON
+    GPA               -0.698      0.255     -2.739      0.006
+
+ Intercepts
+    C#1               -0.241      0.460     -0.523      0.601
+
+Parameterization using Reference Class 1
+
+ C#2      ON
+    GPA                0.698      0.255      2.739      0.006
+
+ Intercepts
+    C#2                0.241      0.460      0.523      0.601
+
+
+ODDS RATIOS FOR TESTS OF CATEGORICAL LATENT VARIABLE MULTINOMIAL LOGISTIC REGRESSIONS
+USING THE 3-STEP PROCEDURE
+
+                                                95% C.I.
+                    Estimate       S.E. Lower 2.5% Upper 2.5%
+
+ C#1      ON
+    GPA                0.498      0.127      0.302      0.820
+
+
+Parameterization using Reference Class 1
+
+ C#2      ON
+    GPA                2.009      0.512      1.220      3.310
+```
+
+------------------------------------------------------------------------
+
+# References
+
+Drew A. Linzer, Jeffrey B. Lewis (2011).
+poLCA: An R Package for Polytomous Variable Latent Class Analysis.
+Journal of Statistical Software, 42(10), 1-29.
+URL <http://www.jstatsoft.org/v42/i10/>.
+
+Hallquist, M. N., & Wiley, J. F.
+(2018).
+MplusAutomation: An R Package for Facilitating Large-Scale Latent Variable Analyses in Mplus.
+Structural equation modeling: a multidisciplinary journal, 25(4), 621-638.
+
+Miller, J. D., Hoffer, T., Suchner, R., Brown, K., & Nelson, C.
+(1992).
+LSAY codebook.
+Northern Illinois University.
+
+Muthén, B. O., Muthén, L. K., & Asparouhov, T.
+(2017).
+Regression and mediation analysis using Mplus.
+Los Angeles, CA: Muthén & Muthén.
+
+Muthén, L.K.
+and Muthén, B.O.
+(1998-2017).
+Mplus User's Guide.
+Eighth Edition.
+Los Angeles, CA: Muthén & Muthén
+
+R Core Team (2017).
+R: A language and environment for statistical computing.
+R Foundation for Statistical Computing, Vienna, Austria.
+URL <http://www.R-project.org/>
+
+Wickham et al., (2019).
+Welcome to the tidyverse.
+Journal of Open Source Software, 4(43), 1686, <https://doi.org/10.21105/joss.01686>
+
+------------------------------------------------------------------------
+
+![](figures/UCSB_Navy_mark.png){width="75%"}
